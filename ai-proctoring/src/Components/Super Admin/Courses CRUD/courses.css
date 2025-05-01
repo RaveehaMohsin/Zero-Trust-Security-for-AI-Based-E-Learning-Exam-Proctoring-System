@@ -1,0 +1,396 @@
+/* Course Management Styles */
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.add-button {
+    background-color: #604652; /* Deep plum */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+}
+
+.add-button:hover {
+    background-color: #735557; /* Muted wine */
+}
+
+.courses-table-container {
+    overflow-x: auto;
+}
+
+.courses-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(96, 70, 82, 0.1); /* Subtle plum tint */
+}
+
+.courses-table th, 
+.courses-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f0e6e0; /* Soft beige */
+}
+
+.courses-table th {
+    background-color: #f8f5f2; /* Very light beige */
+    font-weight: 600;
+    color: #604652; /* Deep plum text */
+    letter-spacing: 0.5px;
+}
+
+.courses-table tr:hover {
+    background-color: rgba(210, 159, 128, 0.1); /* Soft peach tint */
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  
+  .status-badge.active {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .status-badge.inactive {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+  
+  .status-badge.archived {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .edit-button, .delete-button {
+    padding: 0.25rem 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+  }
+  
+  .edit-button {
+    background-color: #A4B465;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: #f5c6cb;
+    color: #721c24;
+  }
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(147, 138, 142, 0.7); /* Semi-transparent plum */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content, .confirm-modal {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(96, 70, 82, 0.2);
+    border-top: 4px solid #D29F80; /* Peach accent */
+}
+
+.modal-content h4, .confirm-modal h4 {
+    margin-top: 0;
+    color: #604652; /* Deep plum */
+    border-bottom: 1px solid #f0e6e0;
+    padding-bottom: 0.5rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #735557; /* Muted wine */
+}
+
+.form-group input, 
+.form-group textarea, 
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e0d6d0;
+    border-radius: 4px;
+    font-family: inherit;
+    transition: border 0.3s ease;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus, 
+.form-group select:focus {
+    border-color: #D29F80; /* Peach */
+    outline: none;
+}
+
+.form-group textarea {
+    min-height: 100px;
+}
+
+.form-actions, .confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.form-actions button, 
+.confirm-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-button {
+    background-color: #604652; /* Deep plum */
+    color: white;
+}
+
+.submit-button:hover {
+    background-color: #735557; /* Muted wine */
+}
+
+.confirm-delete {
+    background-color: #735557; /* Muted wine */
+    color: white;
+}
+
+.confirm-delete:hover {
+    background-color: #604652; /* Deep plum */
+}
+
+/* Enhanced Table Styles */
+.courses-table {
+  font-size: 0.9rem;
+}
+
+.courses-table th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.courses-table tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Enhanced Action Buttons */
+.edit-button {
+  background-color: #A4B465 !important; /* Olive green */
+  color: white !important;
+  transition: all 0.2s ease;
+}
+
+.edit-button:hover {
+  background-color: #8a9a4b !important;
+  transform: translateY(-1px);
+}
+
+.delete-button {
+  background-color: #e2b4bd !important; /* Soft red */
+  color: #721c24 !important;
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #d49aa6 !important;
+  transform: translateY(-1px);
+}
+
+.delete-button:disabled {
+  background-color: #f5f5f5 !important;
+  color: #ccc !important;
+}
+
+/* Enhanced Status Badges */
+.status-badge {
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+  padding: 0.3rem 0.5rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  color: #604652;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(96, 70, 82, 0.3);
+  border-radius: 50%;
+  border-top-color: #604652;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-state {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  display: flex;
+  align-items: center;
+}
+
+.error-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #735557;
+  background-color: #f8f5f2;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .courses-table {
+    font-size: 0.8rem;
+  }
+  
+  .courses-table th, 
+  .courses-table td {
+    padding: 0.75rem;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .edit-button, 
+  .delete-button {
+    width: 100%;
+  }
+}
+
+/* Modal Enhancements */
+.modal-content {
+  animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+  from { 
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Validation */
+.invalid-input {
+  border-color: #f5c6cb !important;
+  background-color: #f8d7da !important;
+}
+
+.validation-error {
+  color: #721c24;
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  display: block;
+}
+
+/* new classes */
+/* Toast Notification Styles */
+.toast-loading,
+.toast-error {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+}
+
+.toast-loading {
+  background-color: #f8f5f2;
+  color: #604652;
+  border: 1px solid #e0d6d0;
+}
+
+.toast-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Keep your existing spinner and icon styles */
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(96, 70, 82, 0.3);
+  border-radius: 50%;
+  border-top-color: #604652;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+.error-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

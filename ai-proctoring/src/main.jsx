@@ -4,9 +4,11 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './Components/Auth/auth';
 import VerifyOTP from './Components/Auth/verifyOTP';
 import ProtectedRoute from './ProtectedRoute';
+import Dashboard from './Components/Student/ProfileSetup/studentprofile';
+import SuperAdminDashboard from './Components/Super Admin/Dashboard/superadminDashboard';
 
 // Placeholder components until you have the real ones
-const Dashboard = () => <div>Dashboard (Placeholder)</div>;
+
 const AdminDashboard = () => <div>Admin Dashboard (Placeholder)</div>;
 
 const Main = () => {
@@ -20,8 +22,8 @@ const Main = () => {
           
           {/* Protected Routes with placeholder components */}
           <Route path="/dashboard" element={
-            <ProtectedRoute allowedRoles={['student', 'admin']}>
-              <Dashboard />
+            <ProtectedRoute allowedRoles={[ 'super admin']}>
+              <SuperAdminDashboard />
             </ProtectedRoute>
           } />
           

@@ -18,6 +18,14 @@ const Auth = () => {
 
   const API_URL = 'http://localhost:5000/api/auth';
 
+  const getDeviceId = () => {
+    const userAgent = navigator.userAgent;
+    const platform = navigator.platform;
+    const hardwareConcurrency = navigator.hardwareConcurrency || 'unknown';
+    const deviceMemory = navigator.deviceMemory || 'unknown';
+    return `${userAgent}-${platform}-${hardwareConcurrency}-${deviceMemory}`;
+  };
+
   const toggleAuthMode = () => {
     setIsLogin(!isLogin);
     setError('');
@@ -36,9 +44,9 @@ const Auth = () => {
       const endpoint = isLogin ? 'login' : 'register';
       const response = await axios.post(`${API_URL}/${endpoint}`, {
         ...formData,
-        device_id: navigator.userAgent + Math.random().toString(36).substring(2) // Simple device fingerprint
+        deviceId: getDeviceId()
       });
-
+      
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role);
       
@@ -47,6 +55,7 @@ const Auth = () => {
         localStorage.setItem('emailForMFA', formData.email);
         navigate('/verify-otp');
       } else {
+        localStorage.setItem('emailForMFA', '');
         navigate('/dashboard');
       }
     } catch (err) {

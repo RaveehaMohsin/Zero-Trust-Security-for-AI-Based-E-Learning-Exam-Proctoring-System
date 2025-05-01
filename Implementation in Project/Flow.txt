@@ -1,0 +1,3 @@
+Authentication Completed
+Sign up , Sign In 
+JWT Token expiry 1hr , OTP Verify for admin(MFA) , ProtectedRoute

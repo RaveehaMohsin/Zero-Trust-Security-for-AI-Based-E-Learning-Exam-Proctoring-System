@@ -1,5 +1,3 @@
-// authController.js
-
 // Required modules
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -67,6 +65,7 @@ const register = async (req, res) => {
  */
 const login = async (req, res) => {
   try {
+
     const { email, password, deviceId } = req.body;
 
     // 1. Find user by email
@@ -88,12 +87,16 @@ const login = async (req, res) => {
     }
 
     // 3. Device Trust: Update device ID
-    if (deviceId) {
-      await pool.query(
-        'UPDATE users SET device_id = ? WHERE email = ?',
-        [deviceId, email]
-      );
-    }
+      if (deviceId) {
+        try {
+          await pool.query(
+            'UPDATE users SET device_id = ? WHERE email = ?',
+            [deviceId, email]
+          );
+        } catch (err) {
+          console.error('Failed to update device ID:', err);
+        }
+      }
 
     // 4. Check if admin requires MFA
     if (userData.role === 'admin') {
