@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './sadashboard.css';
 import CourseManagement from '../Courses CRUD/coursesCRUD';
+import ProfileSetup from '../../ProfileSetup/ProfileAdd/profileadd';
 
 const SuperAdminDashboard = () => {
   const [activeModule, setActiveModule] = useState('courses'); // Default to courses
@@ -75,8 +76,8 @@ const SuperAdminDashboard = () => {
               transition={{ duration: 0.2 }}
             >
               {activeModule === 'courses' && <CourseManagement />}
-              {/* {activeModule === 'users' && <UserControl />}
-              {activeModule === 'analytics' && <SystemAnalytics />}
+              {activeModule === 'users' && <ProfileSetup />}
+              {/* {activeModule === 'analytics' && <SystemAnalytics />}
               {activeModule === 'alerts' && <SecurityAlerts />}
               {activeModule === 'settings' && <SystemSettings />} */}
             </motion.div>
