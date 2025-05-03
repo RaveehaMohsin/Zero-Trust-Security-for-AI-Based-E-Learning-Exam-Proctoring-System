@@ -6,10 +6,10 @@ import VerifyOTP from './Components/Auth/verifyOTP';
 import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './Components/Student/ProfileSetup/studentprofile';
 import SuperAdminDashboard from './Components/Super Admin/Dashboard/superadminDashboard';
+import InvigilatorDashboard from './Components/Invigilator/Dashboard/invigilatorDashboard';
 
-// Placeholder components until you have the real ones
 
-const AdminDashboard = () => <div>Admin Dashboard (Placeholder)</div>;
+
 
 const Main = () => {
   return (
@@ -22,14 +22,14 @@ const Main = () => {
           
           {/* Protected Routes with placeholder components */}
           <Route path="/dashboard" element={
-            <ProtectedRoute allowedRoles={[ 'super admin']}>
+            <ProtectedRoute allowedRoles={['super admin']}>
               <SuperAdminDashboard />
             </ProtectedRoute>
           } />
           
           <Route path="/admin" element={
             <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
+              <InvigilatorDashboard />
             </ProtectedRoute>
           } />
         </Routes>

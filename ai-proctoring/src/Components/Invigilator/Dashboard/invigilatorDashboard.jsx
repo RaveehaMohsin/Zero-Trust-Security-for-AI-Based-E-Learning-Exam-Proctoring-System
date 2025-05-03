@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import './sadashboard.css';
-import CourseManagement from '../Courses CRUD/coursesCRUD';
+import '../../Super Admin/Dashboard/sadashboard.css';
 import ProfileSetup from '../../ProfileSetup/profileadd';
+import Exam from '../Exams/exam';
 
-const SuperAdminDashboard = () => {
-  const [activeModule, setActiveModule] = useState('courses'); // Default to courses
+const InvigilatorDashboard = () => {
+  const [activeModule, setActiveModule] = useState('users'); // Default to courses
   
   // Mock user data
   const currentUser = {
-    name: "Admin User",
-    role: "Super Admin",
+    name: "Invigilator",
+    role: "Invigilator",
     avatar: "👑"
   };
   // Radial menu items
   const modules = [
     { id: 'users', icon: '👥', label: 'Profile', color: '#6D8B74' },
-    { id: 'courses', icon: '📚', label: 'Courses', color: '#A4B465' },
+    { id: 'exams', icon: '📚', label: 'Exams', color: '#A4B465' },
     { id: 'analytics', icon: '📊', label: 'Analytics', color: '#5F7A61' },
     { id: 'alerts', icon: '🚨', label: 'Alerts', color: '#D54C4C' },
     { id: 'settings', icon: '⚙️', label: 'Settings', color: '#8B7E74' }
@@ -74,7 +74,7 @@ const SuperAdminDashboard = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {activeModule === 'courses' && <CourseManagement />}
+              {activeModule === 'exams' && <Exam />}
               {activeModule === 'users' && <ProfileSetup />}
               {/* {activeModule === 'analytics' && <SystemAnalytics />}
               {activeModule === 'alerts' && <SecurityAlerts />}
@@ -88,4 +88,4 @@ const SuperAdminDashboard = () => {
   );
 };
 
-export default SuperAdminDashboard;
+export default InvigilatorDashboard;

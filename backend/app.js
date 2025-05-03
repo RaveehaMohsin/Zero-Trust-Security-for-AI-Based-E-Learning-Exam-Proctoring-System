@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const coursesRoutes = require('./routes/coursesCRUDRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const examRoutes = require('./routes/examRoutes')
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,7 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/auth', authRoutes);
 app.use('/api/courses' , coursesRoutes);
 app.use('/api/profiles', profileRoutes);
+app.use('/api/exams', examRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
