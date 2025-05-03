@@ -4,6 +4,8 @@ const pool = require('../config/db');
 const createExam = async (req, res) => {
   try {
     const { course_id, title, description, start_time, end_time } = req.body;
+    console.log(req.user)
+    const invigilator_id = req.user.id; 
 
     // Validate input
     if (!course_id || !title || !start_time || !end_time) {
@@ -39,9 +41,9 @@ const createExam = async (req, res) => {
     // Insert exam
     const [result] = await pool.query(
       `INSERT INTO exams 
-       (course_id, title, description, start_time, end_time) 
-       VALUES (?, ?, ?, ?, ?)`,
-      [course_id, title, description, start_time, end_time]
+       (course_id, title, description, start_time, end_time , invigilator_id) 
+       VALUES (?, ?, ?, ?, ? , ?)`,
+      [course_id, title, description, start_time, end_time , invigilator_id]
     );
 
     res.status(201).json({

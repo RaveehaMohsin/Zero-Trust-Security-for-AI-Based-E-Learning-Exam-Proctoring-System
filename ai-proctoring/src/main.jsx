@@ -9,8 +9,6 @@ import SuperAdminDashboard from './Components/Super Admin/Dashboard/superadminDa
 import InvigilatorDashboard from './Components/Invigilator/Dashboard/invigilatorDashboard';
 
 
-
-
 const Main = () => {
   return (
     <React.StrictMode>

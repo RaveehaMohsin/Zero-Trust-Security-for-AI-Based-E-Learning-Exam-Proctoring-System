@@ -132,3 +132,49 @@
   .error {
     color: #dc3545;
   }
+
+
+  /* Security Modal Styles */
+.security-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.security-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  text-align: center;
+}
+
+.security-content h3 {
+  color: #735557;
+  margin-bottom: 15px;
+}
+
+.security-content input {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.verify-btn {
+  background: #604652;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}

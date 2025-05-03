@@ -9,7 +9,9 @@ const examRoutes = require('./routes/examRoutes')
 dotenv.config();
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  exposedHeaders: ['User-Agent'] // Add this to your CORS config
+}));
 app.use(express.json());
 
 app.use('/uploads', express.static('uploads'));
