@@ -16,6 +16,95 @@ const ProfileSetup = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [user, setUser] = useState({ name: "", email: "" });
 
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [passwordFeedback, setPasswordFeedback] = useState("");
+
+  const checkPasswordStrength = (password) => {
+    let strength = 0;
+    let feedback = "";
+
+    // Length check
+    if (password.length >= 8) strength++;
+    else feedback = "Password should be at least 8 characters";
+
+    // Contains number
+    if (/\d/.test(password)) strength++;
+    else feedback = "Add numbers to strengthen password";
+
+    // Contains special char
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+    else feedback = "Add special characters";
+
+    // Contains upper and lower case
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+    else feedback = "Mix uppercase and lowercase letters";
+
+    setPasswordStrength(strength);
+    setPasswordFeedback(feedback);
+  };
+
+  const handlePasswordUpdate = async () => {
+    try {
+      const passwordInputs = document.querySelectorAll('input[type="password"]');
+      const [currentPassword, newPassword, confirmPassword] = Array.from(passwordInputs).map(input => input.value);
+  
+      // Basic validation
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        await Swal.fire('Error', 'Please fill in all password fields', 'error');
+        return;
+      }
+  
+      if (newPassword !== confirmPassword) {
+        await Swal.fire('Error', 'New passwords do not match', 'error');
+        return;
+      }
+  
+      if (passwordStrength < 4) {
+        await Swal.fire('Error', 'Please choose a stronger password (minimum medium strength)', 'error');
+        return;
+      }
+  
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+  
+      const response = await fetch(`${API_URL}/auth/update-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || 'Password update failed');
+      }
+  
+      await Swal.fire(
+        'Success!',
+        'Your password has been updated successfully',
+        'success'
+      );
+  
+      // Clear password fields
+      passwordInputs.forEach(input => input.value = '');
+      setPasswordStrength(0);
+      setPasswordFeedback('');
+  
+    } catch (err) {
+      console.error('Password update error:', err);
+      await Swal.fire(
+        'Error',
+        err.message || 'Failed to update password. Please try again.',
+        'error'
+      );
+    }
+  };
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -76,7 +165,6 @@ const ProfileSetup = ({ onComplete }) => {
         if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();
-        
 
         if (data.success && data.profile) {
           setFormData({
@@ -111,10 +199,9 @@ const ProfileSetup = ({ onComplete }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    console.log(file)
+    console.log(file);
     if (file) {
       setFormData((prev) => ({
         ...prev,
@@ -124,42 +211,41 @@ const ProfileSetup = ({ onComplete }) => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userId) return;
-  
+
     try {
       const formDataToSend = new FormData();
-    
+
       // Append all fields
       formDataToSend.append("userId", userId);
-      formDataToSend.append("fullName", formData.fullName || '');
-      formDataToSend.append("bio", formData.bio || '');
-      formDataToSend.append("title", formData.title || '');
-      formDataToSend.append("department", formData.department || '');
-      formDataToSend.append("phone", formData.phone || '');
-      formDataToSend.append("location", formData.location || '');
-      formDataToSend.append("website", formData.website || '');
-      formDataToSend.append("twitter", formData.twitter || '');
-      formDataToSend.append("linkedin", formData.linkedin || '');
-  
+      formDataToSend.append("fullName", formData.fullName || "");
+      formDataToSend.append("bio", formData.bio || "");
+      formDataToSend.append("title", formData.title || "");
+      formDataToSend.append("department", formData.department || "");
+      formDataToSend.append("phone", formData.phone || "");
+      formDataToSend.append("location", formData.location || "");
+      formDataToSend.append("website", formData.website || "");
+      formDataToSend.append("twitter", formData.twitter || "");
+      formDataToSend.append("linkedin", formData.linkedin || "");
+
       if (formData.profilePicture) {
         formDataToSend.append("profilePicture", formData.profilePicture);
       }
-  
+
       const response = await fetch(`${API_URL}/profiles`, {
         method: "POST",
         body: formDataToSend,
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Profile update failed");
       }
-  
+
       const data = await response.json();
-      
+
       // Show success alert
       await Swal.fire({
         title: "Success!",
@@ -167,12 +253,12 @@ const ProfileSetup = ({ onComplete }) => {
         icon: "success",
         confirmButtonText: "OK",
       });
-      
+
       console.log("Profile saved:", data);
       onComplete?.();
     } catch (err) {
-      console.error('Submission error:', err);
-      
+      console.error("Submission error:", err);
+
       // Show error alert
       await Swal.fire({
         title: "Error!",
@@ -180,11 +266,11 @@ const ProfileSetup = ({ onComplete }) => {
         icon: "error",
         confirmButtonText: "OK",
       });
-      
+
       setError(err.message);
     }
   };
-  
+
   if (loading) return <div className="loading-spinner">Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
   if (!userId)
@@ -355,7 +441,7 @@ const ProfileSetup = ({ onComplete }) => {
           </motion.div>
         )}
 
-        {currentStep === 3 && (
+        {/* {currentStep === 3 && (
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -395,8 +481,76 @@ const ProfileSetup = ({ onComplete }) => {
               </div>
             </div>
           </motion.div>
-        )}
+        )} */}
 
+        {currentStep === 3 && (
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="form-step"
+          >
+            <div className="security-section">
+              <h3>Password Security - Update your Password</h3>
+
+              <div className="password-strength-container">
+               
+
+                <div className="form-group" >
+                  <label style={{marginTop:"7%"}}>Current Password</label>
+                  <input type="password" placeholder="Enter current password" />
+                </div>
+
+                <div className="form-group">
+                  <label>New Password</label>
+                  <input
+                    type="password"
+                    placeholder="Enter new password"
+                    onChange={(e) => checkPasswordStrength(e.target.value)}
+                  />
+                  <div className="password-strength-meter">
+                    <div
+                      className={`strength-bar ${
+                        passwordStrength >= 1 ? "active" : ""
+                      }`}
+                    ></div>
+                    <div
+                      className={`strength-bar ${
+                        passwordStrength >= 2 ? "active" : ""
+                      }`}
+                    ></div>
+                    <div
+                      className={`strength-bar ${
+                        passwordStrength >= 3 ? "active" : ""
+                      }`}
+                    ></div>
+                    <div
+                      className={`strength-bar ${
+                        passwordStrength >= 4 ? "active" : ""
+                      }`}
+                    ></div>
+                  </div>
+                  <div className="password-feedback">
+                    {passwordFeedback && <p>{passwordFeedback}</p>}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Confirm New Password</label>
+                  <input type="password" placeholder="Confirm new password" />
+                </div>
+
+                <button
+                  type="button"
+                  className="update-password-btn"
+                  onClick={handlePasswordUpdate}
+                >
+                  Update Password
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
         <div className="form-navigation">
           {currentStep > 1 && (
             <button
@@ -424,7 +578,7 @@ const ProfileSetup = ({ onComplete }) => {
             </button>
           ) : (
             <button type="submit" className="submit-button">
-             Save Profile
+              Save Profile
             </button>
           )}
         </div>

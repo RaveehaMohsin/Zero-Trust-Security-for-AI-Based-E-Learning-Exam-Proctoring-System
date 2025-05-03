@@ -219,7 +219,7 @@ const getMe = async (req, res) => {
 
     // Query the database to fetch user data based on userId
     const [user] = await pool.query(
-      'SELECT id, name, email, role FROM users WHERE id = ?',
+      'SELECT id, name,  email, role FROM users WHERE id = ?',
       [userId]
     );
 
@@ -235,9 +235,72 @@ const getMe = async (req, res) => {
 };
 
 
+/**
+ * @desc    Update user password
+ * @route   PUT /api/auth/update-password
+ * @access  Private
+ */
+
+const updatePassword = async (req, res) => {
+  try {
+   // Decode the JWT token from the Authorization header
+   const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer <token>'
+   if (!token) {
+     return res.status(401).json({ error: 'No token provided' });
+   }
+
+   // Decode the token (replace 'your-secret-key' with your actual secret key)
+   const decoded = jwt.verify(token, 'ProctoringAI@2025$Secure');
+   const userId = decoded.userId;  // Assuming the token contains userId
+
+
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Current and new password are required' });
+    }
+
+    // Get current password hash
+    const [user] = await pool.query(
+      'SELECT password FROM users WHERE id = ?',
+      [userId]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, user[0].password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    // Validate new password strength
+    if (newPassword.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await pool.query(
+      'UPDATE users SET password = ? WHERE id = ?',
+      [hashedPassword, userId]
+    );
+
+    res.json({ success: true, message: 'Password updated successfully' });
+
+  } catch (error) {
+    console.error('Password update error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 module.exports = {
   register,
   login,
   verifyOTP,
-  getMe
+  getMe,
+  updatePassword
 };
