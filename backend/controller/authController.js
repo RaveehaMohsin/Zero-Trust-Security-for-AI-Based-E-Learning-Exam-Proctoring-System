@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const pool = require('../config/db'); // MySQL connection pool
 require('dotenv').config();
 
+
 // Helper function to generate OTP
 const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -202,12 +203,24 @@ const verifyOTP = async (req, res) => {
  * @route   GET /api/auth/me
  * @access  Private
  */
+
+
 const getMe = async (req, res) => {
   try {
-    // User ID is set by the auth middleware
+    // Decode the JWT token from the Authorization header
+    const token = req.headers['authorization']?.split(' ')[1]; // 'Bearer <token>'
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    // Decode the token (replace 'your-secret-key' with your actual secret key)
+    const decoded = jwt.verify(token, 'ProctoringAI@2025$Secure');
+    const userId = decoded.userId;  // Assuming the token contains userId
+
+    // Query the database to fetch user data based on userId
     const [user] = await pool.query(
       'SELECT id, name, email, role FROM users WHERE id = ?',
-      [req.user.userId]
+      [userId]
     );
 
     if (user.length === 0) {
@@ -220,6 +233,7 @@ const getMe = async (req, res) => {
     res.status(500).json({ error: 'Cannot fetch user data' });
   }
 };
+
 
 module.exports = {
   register,
