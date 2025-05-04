@@ -18,6 +18,10 @@ const createExam = async (req, res) => {
       return res.status(404).json({ error: 'Course not found' });
     }
 
+    if (course[0].status.toLowerCase() !== 'active') {
+      return res.status(400).json({ error: 'Cannot create exam for an inactive course' });
+    }
+
     // Validate time
     if (new Date(start_time) >= new Date(end_time)) {
       return res.status(400).json({ error: 'End time must be after start time' });
@@ -82,7 +86,111 @@ const getExamsByCourse = async (req, res) => {
   }
 };
 
+// Add these to your exams controller file
+
+const getExamDetails = async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const userId = req.user.id;
+
+    // Check if user is registered for the course this exam belongs to
+    const [exam] = await pool.query(
+      `SELECT e.*, c.title as course_title, c.code as course_code,
+       u.name as invigilator_name
+       FROM exams e
+       JOIN courses c ON e.course_id = c.id
+       JOIN users u ON e.invigilator_id = u.id
+       JOIN course_registrations cr ON c.id = cr.course_id
+       WHERE e.id = ? AND cr.student_id = ? AND cr.status = 'active'`,
+      [examId, userId]
+    );
+
+    if (exam.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Exam not found or you are not registered for this course'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      exam: exam[0]
+    });
+
+  } catch (error) {
+    console.error('Error fetching exam details:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch exam details'
+    });
+  }
+};
+
+const getExamResults = async (req, res) => {
+  try {
+    const { examId } = req.params;
+    const userId = req.user.id;
+
+    // Get the exam result
+    const [results] = await pool.query(
+      `SELECT * FROM exam_results 
+       WHERE exam_id = ? AND student_id = ?`,
+      [examId, userId]
+    );
+
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No results found for this exam'
+      });
+    }
+
+    const result = results[0];
+
+    // Get the questions for this exam
+    const [questions] = await pool.query(
+      `SELECT q.* FROM exam_questions q
+       JOIN exams e ON q.exam_id = e.id
+       WHERE q.exam_id = ?`,
+      [examId]
+    );
+
+    // Parse the options if they're stored as JSON
+    const questionsWithOptions = questions.map(question => {
+      try {
+        return {
+          ...question,
+          options: JSON.parse(question.options)
+        };
+      } catch (e) {
+        return {
+          ...question,
+          options: []
+        };
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      result: {
+        ...result,
+        submitted_answers: JSON.parse(result.submitted_answers || '{}')
+      },
+      questions: questionsWithOptions
+    });
+
+  } catch (error) {
+    console.error('Error fetching exam results:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch exam results'
+    });
+  }
+};
+
 module.exports = {
   createExam,
-  getExamsByCourse
+  getExamsByCourse,
+  getExamDetails,
+  getExamResults,
 };

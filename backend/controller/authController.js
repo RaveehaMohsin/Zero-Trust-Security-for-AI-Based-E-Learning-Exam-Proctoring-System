@@ -100,7 +100,7 @@ const login = async (req, res) => {
       }
 
     // 4. Check if admin requires MFA
-    if (userData.role === 'admin') {
+    if (userData.role === 'admin' || userData.role === 'student' ) {
       const otp = generateOTP();
       
       // Save OTP to DB with 5-minute expiry

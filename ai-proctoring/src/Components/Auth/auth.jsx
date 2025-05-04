@@ -56,7 +56,7 @@ const Auth = () => {
         navigate('/verify-otp');
       } else {
         localStorage.setItem('emailForMFA', '');
-        navigate('/dashboard');
+        navigate('/superadmin');
       }
     } catch (err) {
       setError(err.response?.data?.error || 'Authentication failed');

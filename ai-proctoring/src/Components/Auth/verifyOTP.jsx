@@ -23,7 +23,16 @@ const VerifyOTP = () => {
       const response = await axios.post(`${API_URL}/verify-otp`, { email, otp });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role); // Now this will work
-      navigate('/admin');
+      if(response.data.role === "admin")
+      {
+        navigate('/admin');
+      }
+      else if(response.data.role === "student")
+        {
+          navigate('/student');
+        }
+    
+      
     } catch (error) {
       console.error('OTP verification failed:', error);
       alert('Invalid OTP or it has expired');

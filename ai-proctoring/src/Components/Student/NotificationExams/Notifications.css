@@ -1,0 +1,147 @@
+/* Base Styles */
+.notification-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+  }
+  
+  /* Color Variables */
+  :root {
+    --primary: #604652;
+    --secondary: #735557;
+    --accent: #97866A;
+    --highlight: #D29F80;
+    --light-bg: #f8f4f0;
+  }
+  
+  /* Typography */
+ .notification-container h2 {
+    color: var(--primary);
+    margin: 2rem 0 1rem;
+    /* border-bottom: 2px solid var(--accent); */
+    padding-bottom: 0.5rem;
+  }
+  
+  h3 {
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Exam Grid */
+  .exams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  
+  .exam-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--accent);
+  }
+  
+  .exam-card.completed {
+    border-left-color: #ccc;
+    opacity: 0.8;
+  }
+  
+  .exam-title {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 1rem;
+  }
+  
+  .exam-details {
+    margin: 1rem 0;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+    color: var(--secondary);
+  }
+  
+  .exam-details p {
+    margin: 0.5rem 0;
+  }
+  
+  /* Countdown Timer */
+  .countdown {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+  
+  .countdown-timer {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--secondary);
+  }
+  
+  /* Buttons */
+  .start-exam-btn, .view-results-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  
+  .start-exam-btn {
+    background-color: var(--accent);
+    color: white;
+  }
+  
+  .start-exam-btn:hover {
+    background-color: var(--secondary);
+  }
+  
+  .view-results-btn {
+    background-color: #f0f0f0;
+    color: var(--primary);
+  }
+  
+  .view-results-btn:hover {
+    background-color: #e0e0e0;
+  }
+  
+  /* Messages */
+  .loading, .error, .no-exams {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 4px;
+    text-align: center;
+  }
+  
+  .loading {
+    background-color: var(--light-bg);
+    color: var(--secondary);
+  }
+  
+  .error {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+  
+  .no-exams {
+    background-color: var(--light-bg);
+    color: var(--secondary);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .exams-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .notification-container {
+      padding: 1rem;
+    }
+  }
