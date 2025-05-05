@@ -131,10 +131,12 @@ const getExamResults = async (req, res) => {
     const { examId } = req.params;
     const userId = req.user.id;
 
-    // Get the exam result
+    // Get the exam result and attempt data in a single query
     const [results] = await pool.query(
-      `SELECT * FROM exam_results 
-       WHERE exam_id = ? AND student_id = ?`,
+      `SELECT er.*, ea.questions, ea.submitted_answers 
+       FROM exam_results er
+       JOIN exam_attempts ea ON er.exam_id = ea.exam_id AND er.student_id = ea.student_id
+       WHERE er.exam_id = ? AND er.student_id = ?`,
       [examId, userId]
     );
 
@@ -147,36 +149,42 @@ const getExamResults = async (req, res) => {
 
     const result = results[0];
 
-    // Get the questions for this exam
-    const [questions] = await pool.query(
-      `SELECT q.* FROM exam_questions q
-       JOIN exams e ON q.exam_id = e.id
-       WHERE q.exam_id = ?`,
-      [examId]
-    );
+    // Parse the questions and answers
+    let questions = [];
+    try {
+      questions = JSON.parse(result.questions || '[]');
+    } catch (e) {
+      console.error('Error parsing questions:', e);
+      questions = [];
+    }
 
-    // Parse the options if they're stored as JSON
-    const questionsWithOptions = questions.map(question => {
-      try {
-        return {
-          ...question,
-          options: JSON.parse(question.options)
-        };
-      } catch (e) {
-        return {
-          ...question,
-          options: []
-        };
-      }
-    });
+    let submittedAnswers = {};
+    try {
+      submittedAnswers = JSON.parse(result.submitted_answers || '{}');
+    } catch (e) {
+      console.error('Error parsing submitted answers:', e);
+      submittedAnswers = {};
+    }
+
+    // Format the response with question numbers and correct answers
+    const formattedQuestions = questions.map((question, index) => ({
+      questionNumber: index,
+      question: question.question,
+      options: question.options || [],
+      correctAnswer: question.correctAnswer,
+      selectedAnswer: submittedAnswers[`temp-${index}`] !== undefined 
+        ? submittedAnswers[`temp-${index}`] 
+        : null
+    }));
 
     res.status(200).json({
       success: true,
       result: {
-        ...result,
-        submitted_answers: JSON.parse(result.submitted_answers || '{}')
+        score: result.score,
+        created_at: result.created_at
       },
-      questions: questionsWithOptions
+      questions: formattedQuestions,
+      submittedAnswers: submittedAnswers
     });
 
   } catch (error) {

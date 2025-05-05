@@ -1,186 +1,187 @@
 /* Base Styles */
-.exam-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-  }
-  
-  /* Header Styles */
-  .exam-header {
-    background-color: #604652;
-    color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .exam-header h1 {
-    margin: 0;
-    font-size: 1.8rem;
-  }
-  
-  .exam-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .time-remaining {
-    background-color: #735557;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-weight: bold;
-  }
-  
-  .course-name {
-    font-style: italic;
-  }
-  
-  /* Content Styles */
-  .exam-content {
-    background-color: white;
-    border-radius: 8px;
-    padding: 2rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-  
-  .exam-description {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
-    color: #555;
-  }
-  
-  /* Question Styles */
-  .question-card {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background-color: #f9f9f9;
-    border-radius: 6px;
-    border-left: 4px solid #D29F80;
-  }
-  
-  .question-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .question-number {
-    font-weight: bold;
-    color: #604652;
-  }
-  
-  .question-status {
-    background-color: #97866A;
-    color: white;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-  }
-  
-  .question-text {
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.5;
-  }
-  
-  /* Options Styles */
-  .options-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
-  }
-  
-  .option {
-    display: flex;
-    align-items: center;
-    padding: 0.8rem 1rem;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  
-  .option:hover {
-    border-color: #97866A;
-    background-color: #f5f5f5;
-  }
-  
-  .option.selected {
-    background-color: #D29F80;
-    color: white;
-    border-color: #D29F80;
-  }
-  
-  .option-letter {
-    font-weight: bold;
-    margin-right: 0.8rem;
-    min-width: 20px;
-  }
-  
-  /* Button Styles */
-  .exam-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 2rem;
-  }
-  
-  .submit-btn {
-    background-color: #604652;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-  
-  .submit-btn:hover {
-    background-color: #735557;
-  }
-  
-  .submit-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  /* Error and Loading States */
-  .error-message {
-    color: #d32f2f;
-    text-align: center;
-    margin: 1rem 0;
-  }
-  
-  .exam-loading {
-    text-align: center;
-    padding: 2rem;
-    font-size: 1.2rem;
-    color: #555;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .exam-container {
+.exam-interface-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Header Styles */
+.exam-interface-header {
+  background-color: #604652;
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.exam-interface-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.exam-interface-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.exam-interface-time-remaining {
+  background-color: #735557;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.exam-interface-course-name {
+  font-style: italic;
+}
+
+/* Content Styles */
+.exam-interface-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.exam-interface-description {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+  color: #555;
+}
+
+/* Question Styles */
+.exam-interface-question-card {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border-left: 4px solid #D29F80;
+}
+
+.exam-interface-question-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.exam-interface-question-number {
+  font-weight: bold;
+  color: #604652;
+}
+
+.exam-interface-question-status {
+  background-color: #97866A;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.exam-interface-question-text {
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Options Styles */
+.exam-interface-options-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
+.exam-interface-option {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exam-interface-option:hover {
+  border-color: #97866A;
+  background-color: #f5f5f5;
+}
+
+.exam-interface-option.selected {
+  background-color: #D29F80;
+  color: white;
+  border-color: #D29F80;
+}
+
+.exam-interface-option-letter {
+  font-weight: bold;
+  margin-right: 0.8rem;
+  min-width: 20px;
+}
+
+/* Button Styles */
+.exam-interface-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.exam-interface-submit-btn {
+  background-color: #604652;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.exam-interface-submit-btn:hover {
+  background-color: #735557;
+}
+
+.exam-interface-submit-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Error and Loading States */
+.exam-interface-error-message {
+  color: #d32f2f;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.exam-interface-loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exam-interface-container {
       padding: 1rem;
-    }
-    
-    .exam-header {
-      padding: 1rem;
-    }
-    
-    .exam-content {
-      padding: 1rem;
-    }
-    
-    .question-card {
-      padding: 1rem;
-    }
   }
+  
+  .exam-interface-header {
+      padding: 1rem;
+  }
+  
+  .exam-interface-content {
+      padding: 1rem;
+  }
+  
+  .exam-interface-question-card {
+      padding: 1rem;
+  }
+}
+

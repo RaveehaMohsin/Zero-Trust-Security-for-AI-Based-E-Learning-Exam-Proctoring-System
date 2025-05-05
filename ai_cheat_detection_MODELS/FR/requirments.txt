@@ -1,0 +1,12 @@
+python -m venv venv
+
+venv\Scripts\activate
+
+
+pip install psutil pygetwindow
+pip install Dlib
+pip install opencv-python
+pip install fastapi uvicorn pandas
+pip install fastapi uvicorn pygetwindow pywin32
+uvicorn tab_chrome_cheat_api:app --reload
+uvicorn face_cheat_api:app --reload

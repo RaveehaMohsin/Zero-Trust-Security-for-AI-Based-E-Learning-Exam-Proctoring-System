@@ -10,6 +10,14 @@ if (iv.length !== 16) {
   throw new Error(`Invalid IV length: Expected 16 bytes, got ${iv.length} bytes`);
 }
 
+exports.generateSecureHash = (data) => {
+  return crypto.createHash('sha256')
+    .update(data + process.env.JWT_SECRET)
+    .digest('hex');
+};
+
+
+
 exports.encrypt = (text) => {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -39,3 +47,4 @@ exports.decrypt = ({ encryptedData, iv: ivHex }) => {
     throw new Error('Failed to decrypt data');
   }
 };
+

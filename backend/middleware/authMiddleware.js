@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
+const {  generateSecureHash } = require("../utils/crypto");
 
 // Protect routes - verify JWT token
 const protect = async (req, res, next) => {
@@ -142,6 +143,14 @@ const verifySecurityQuestion = async (req, res, next) => {
         deviceFingerprint,
         req.user.id,
       ]);
+
+      await pool.query(
+        `UPDATE exam_access_log 
+         SET status = 'approved' 
+         WHERE student_id = ? AND device_hash = ?`,
+        [req.user.id, generateSecureHash(deviceFingerprint)]
+      );
+
       return res.status(200).json({
         success: true,
         message: "Device verified",

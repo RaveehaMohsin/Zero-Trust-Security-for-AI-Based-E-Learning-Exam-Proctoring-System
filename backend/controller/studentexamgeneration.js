@@ -1,95 +1,130 @@
 const pool = require("../config/db");
-
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { encrypt, generateSecureHash } = require("../utils/crypto");
+const logger = require('../utils/logger');
+
+// Initialize Gemini AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 exports.startExam = async (req, res) => {
-  try {
-    const { examId } = req.params;
-    const studentId = req.user.id;
+try {
+  const { examId } = req.params;
+  const studentId = req.user.id;
+  const ipAddress = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  const userAgent = req.headers['user-agent'];
+  const deviceFingerprint = `${userAgent}::${ipAddress}`.replace(/::1$/, '::127.0.0.1');
 
-    // Check if student already completed this exam
-    const [existingResult] = await pool.query(
-      `SELECT 1 FROM exam_results 
-             WHERE exam_id = ? AND student_id = ?`,
-      [examId, studentId]
-    );
+  // 1. First check exam availability
+  const [exam] = await pool.query(
+    `SELECT * FROM exams WHERE id = ? AND start_time <= NOW() AND end_time >= NOW()`,
+    [examId]
+  );
 
-    if (existingResult.length > 0) {
+  if (exam.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Exam is not currently available"
+    });
+  }
+  // 2. Check for ANY active exam attempt (regardless of device)
+  const [activeAttempt] = await pool.query(
+    `SELECT id FROM exam_attempts 
+     WHERE exam_id = ? AND student_id = ? AND end_time IS NULL`,
+    [examId, studentId]
+  );
+
+  if (activeAttempt.length > 0) {
+    // Check if this is same device trying to reload
+    const currentDeviceHash = generateSecureHash(deviceFingerprint);
+    
+    if (activeAttempt[0].device_hash === currentDeviceHash) {
+      // Same device - allow reload but return existing attempt
+      const [existingQuestions] = await pool.query(
+        `SELECT questions FROM exam_attempts WHERE id = ?`,
+        [activeAttempt[0].id]
+      );
+      
+      return res.status(200).json({
+        success: true,
+        exam: exam[0],
+        questions: {
+          encryptedData: existingQuestions[0].questions
+        },
+        existingAttempt: true
+      });
+    } else {
+      // Different device/browser - block access
       return res.status(403).json({
         success: false,
-        message: "You have already completed this exam",
+        message: "Exam already in progress on another device/browser",
+        blockMultipleDevices: true
       });
     }
+  }
 
-    // Verify student is registered for this exam
-    const [registration] = await pool.query(
-      `SELECT 1 FROM course_registrations cr
-         JOIN exams e ON cr.course_id = e.course_id
-         WHERE cr.student_id = ? AND e.id = ? AND cr.status = 'active'`,
-      [studentId, examId]
-    );
+  // 3. Check device access status
+  const [existingAccess] = await pool.query(
+    `SELECT status FROM exam_access_log 
+     WHERE exam_id = ? AND student_id = ? AND device_hash = ?`,
+    [examId, studentId, generateSecureHash(deviceFingerprint)]
+  );
 
-    if (registration.length === 0) {
-      return res.status(403).json({
-        success: false,
-        message: "You are not registered for this exam",
-      });
-    }
-
-    // Check exam time validity
-    const [exam] = await pool.query(
-      `SELECT * FROM exams 
-         WHERE id = ? AND start_time <= NOW() AND end_time >= NOW()`,
-      [examId]
-    );
-
-    if (exam.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Exam is not currently available",
-      });
-    }
-
-    // Check if exam already started by this student
-    const [existingAttempt] = await pool.query(
-      `SELECT 1 FROM exam_attempts 
-         WHERE exam_id = ? AND student_id = ? AND end_time IS NULL`,
-      [examId, studentId]
-    );
-
-    if (existingAttempt.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: "You have already started this exam",
-      });
-    }
-
-    // Generate questions
-    const questions = await generateExamQuestions(exam[0]);
-
-    // Store questions in a dedicated column (add this column to your table if it doesn't exist)
+  // 4. If no record exists or was rejected, require verification
+  if (!existingAccess.length || existingAccess[0].status === 'rejected') {
     await pool.query(
-      `INSERT INTO exam_attempts (exam_id, student_id, start_time, questions)
-         VALUES (?, ?, NOW(), ?)`,
-      [examId, studentId, JSON.stringify(questions)]
+      `INSERT INTO exam_access_log 
+       (exam_id, student_id, device_hash, ip_address, user_agent, status)
+       VALUES (?, ?, ?, ?, ?, 'pending')
+       ON DUPLICATE KEY UPDATE status = 'pending'`,
+      [examId, studentId, generateSecureHash(deviceFingerprint), ipAddress, userAgent]
+    );
+    
+    return res.status(403).json({
+      success: false,
+      message: "Device verification required",
+      requiresSecurityQuestion: true
+    });
+  }
+
+  // 5. Verify access is approved for current device
+  if (existingAccess[0].status !== 'approved') {
+    return res.status(403).json({
+      success: false,
+      message: "Device not approved for exam access"
+    });
+  }
+
+
+    // Generate and encrypt questions
+    const questions = await generateExamQuestions(exam[0]);
+    const encryptedQuestions = encrypt(JSON.stringify(questions));
+
+
+    // Record exam attempt
+    await pool.query(
+      `INSERT INTO exam_attempts 
+       (exam_id, student_id, start_time, questions , encryptedQuestions)
+       VALUES (?, ?, NOW(), ?, ?)`,
+      [examId, studentId, JSON.stringify(questions) , encryptedQuestions.encryptedData, 
+      //  generateSecureHash(deviceFingerprint)
+      ]
     );
 
     res.status(200).json({
       success: true,
       exam: exam[0],
-      questions,
+      questions: encryptedQuestions
     });
+
   } catch (error) {
-    console.error("Exam start error:", error);
+    logger.error(`Exam start failed: ${error.message}`);
     res.status(500).json({
       success: false,
-      message: "Failed to start exam",
+      message: "Failed to start exam"
     });
   }
 };
 
-// Initialize the Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generateExamQuestions(exam) {
   try {
@@ -285,3 +320,7 @@ exports.submitExam = async (req, res) => {
     });
   }
 };
+
+
+
+

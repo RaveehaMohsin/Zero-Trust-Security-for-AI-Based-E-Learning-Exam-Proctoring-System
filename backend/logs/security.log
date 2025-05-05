@@ -1,0 +1,18 @@
+2025-05-05T09:59:22.811Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T10:07:48.758Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T10:07:54.420Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T10:10:15.691Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T10:10:21.435Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T10:14:58.589Z [ERROR]: Exam start failed: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '?)' at line 3
+2025-05-05T10:25:59.281Z [ERROR]: Exam start failed: CONSTRAINT `exam_attempts.questions` failed for `ai-proctoring`.`exam_attempts`
+2025-05-05T10:26:00.013Z [ERROR]: Exam start failed: CONSTRAINT `exam_attempts.questions` failed for `ai-proctoring`.`exam_attempts`
+2025-05-05T10:28:37.290Z [ERROR]: Exam start failed: CONSTRAINT `exam_attempts.questions` failed for `ai-proctoring`.`exam_attempts`
+2025-05-05T10:28:43.749Z [ERROR]: Exam start failed: CONSTRAINT `exam_attempts.questions` failed for `ai-proctoring`.`exam_attempts`
+2025-05-05T10:37:32.389Z [ERROR]: Exam start failed: generateSecureHash is not a function
+2025-05-05T10:37:32.400Z [ERROR]: Exam start failed: generateSecureHash is not a function
+2025-05-05T10:41:13.142Z [ERROR]: Encryption failed: generateHMAC is not defined
+2025-05-05T10:41:13.146Z [ERROR]: Exam start failed: generateHMAC is not defined
+2025-05-05T10:41:18.745Z [ERROR]: Encryption failed: generateHMAC is not defined
+2025-05-05T10:41:18.745Z [ERROR]: Exam start failed: generateHMAC is not defined
+2025-05-05T12:47:30.452Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'
+2025-05-05T12:47:30.468Z [ERROR]: Exam start failed: Unknown column 'device_hash' in 'field list'

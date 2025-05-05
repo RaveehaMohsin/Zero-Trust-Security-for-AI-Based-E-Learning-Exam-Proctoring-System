@@ -132,66 +132,222 @@ exports.getAvailableCourses = async (req, res) => {
 };
 
 
+// exports.getUpcomingExams = async (req, res) => {
+//     try {
+//       const [upcomingExams] = await pool.query(
+//         `SELECT e.id, e.title as exam_title, e.description as exam_description,
+//          e.start_time as exam_date, e.end_time,
+//          c.id as course_id, c.code as course_code, c.title as course_title,
+//          u.name as invigilator_name,
+//          TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+//          FROM exams e
+//          JOIN courses c ON e.course_id = c.id
+//          JOIN users u ON e.invigilator_id = u.id
+//          JOIN course_registrations cr ON c.id = cr.course_id
+//          WHERE cr.student_id = ? AND cr.status = 'active'
+//          AND e.end_time > NOW()
+//          ORDER BY e.start_time ASC`,
+//         [req.user.id]
+//       );
+  
+//       // Modified query to only get completed exams that have results
+//       const [completedExamsWithResults] = await pool.query(
+//         `SELECT e.id, e.title as exam_title, e.description as exam_description,
+//          e.start_time as exam_date, e.end_time,
+//          c.id as course_id, c.code as course_code, c.title as course_title,
+//          u.name as invigilator_name,
+//          er.score, er.created_at,
+//          TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+//          FROM exams e
+//          JOIN courses c ON e.course_id = c.id
+//          JOIN users u ON e.invigilator_id = u.id
+//          JOIN course_registrations cr ON c.id = cr.course_id
+//          JOIN exam_results er ON e.id = er.exam_id AND er.student_id = cr.student_id
+//          WHERE cr.student_id = ? AND cr.status = 'active'
+//          AND e.end_time <= NOW()
+//          ORDER BY e.end_time DESC`,
+//         [req.user.id]
+//       );
+  
+//       res.status(200).json({
+//         success: true,
+//         upcomingExams: upcomingExams.map(exam => ({
+//           ...exam,
+//           duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+//         })),
+//         completedExams: completedExamsWithResults.map(exam => ({
+//           ...exam,
+//           result: {
+//             score: exam.score,
+//             created_at: exam.created_at
+//           },
+//           duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+//         }))
+//       });
+//     } catch (error) {
+//       console.error('Error fetching exams:', error);
+//       res.status(500).json({
+//         success: false,
+//         message: 'Failed to fetch exams'
+//       });
+//     }
+//   };
+
+
+// exports.getUpcomingExams = async (req, res) => {
+//   try {
+//       // First get all active course exams that haven't ended yet
+//       const [upcomingExams] = await pool.query(
+//           `SELECT e.id, e.title as exam_title, e.description as exam_description,
+//            e.start_time as exam_date, e.end_time,
+//            c.id as course_id, c.code as course_code, c.title as course_title,
+//            u.name as invigilator_name,
+//            TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+//            FROM exams e
+//            JOIN courses c ON e.course_id = c.id
+//            JOIN users u ON e.invigilator_id = u.id
+//            JOIN course_registrations cr ON c.id = cr.course_id
+//            WHERE cr.student_id = ? AND cr.status = 'active'
+//            AND e.end_time > NOW()
+//            ORDER BY e.start_time ASC`,
+//           [req.user.id]
+//       );
+
+//       // Get exams that have ended but don't have both attempts and results
+//       const [endedButNotCompleted] = await pool.query(
+//           `SELECT e.id
+//            FROM exams e
+//            JOIN course_registrations cr ON e.course_id = cr.course_id
+//            WHERE cr.student_id = ? AND cr.status = 'active'
+//            AND e.end_time <= NOW()
+//            AND (NOT EXISTS (
+//                SELECT 1 FROM exam_attempts ea 
+//                WHERE ea.exam_id = e.id AND ea.student_id = cr.student_id
+//            ) OR NOT EXISTS (
+//                SELECT 1 FROM exam_results er 
+//                WHERE er.exam_id = e.id AND er.student_id = cr.student_id
+//            ))`,
+//           [req.user.id]
+//       );
+
+//       // Combine upcoming exams with those that ended but aren't fully completed
+//       const allUpcomingExams = [...upcomingExams, ...endedButNotCompleted];
+
+//       // Modified query to only get completed exams that have both attempts and results
+//       const [completedExamsWithResults] = await pool.query(
+//           `SELECT e.id, e.title as exam_title, e.description as exam_description,
+//            e.start_time as exam_date, e.end_time,
+//            c.id as course_id, c.code as course_code, c.title as course_title,
+//            u.name as invigilator_name,
+//            er.score, er.created_at,
+//            TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+//            FROM exams e
+//            JOIN courses c ON e.course_id = c.id
+//            JOIN users u ON e.invigilator_id = u.id
+//            JOIN course_registrations cr ON c.id = cr.course_id
+//            JOIN exam_attempts ea ON e.id = ea.exam_id AND ea.student_id = cr.student_id
+//            JOIN exam_results er ON e.id = er.exam_id AND er.student_id = cr.student_id
+//            WHERE cr.student_id = ? AND cr.status = 'active'
+//            ORDER BY e.end_time DESC`,
+//           [req.user.id]
+//       );
+
+//       res.status(200).json({
+//           success: true,
+//           upcomingExams: allUpcomingExams.map(exam => ({
+//               ...exam,
+//               duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+//           })),
+//           completedExams: completedExamsWithResults.map(exam => ({
+//               ...exam,
+//               result: {
+//                   score: exam.score,
+//                   created_at: exam.created_at
+//               },
+//               duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+//           }))
+//       });
+//   } catch (error) {
+//       console.error('Error fetching exams:', error);
+//       res.status(500).json({
+//           success: false,
+//           message: 'Failed to fetch exams'
+//       });
+//   }
+// };
+
+
 exports.getUpcomingExams = async (req, res) => {
-    try {
-      const [upcomingExams] = await pool.query(
-        `SELECT e.id, e.title as exam_title, e.description as exam_description,
-         e.start_time as exam_date, e.end_time,
-         c.id as course_id, c.code as course_code, c.title as course_title,
-         u.name as invigilator_name,
-         TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
-         FROM exams e
-         JOIN courses c ON e.course_id = c.id
-         JOIN users u ON e.invigilator_id = u.id
-         JOIN course_registrations cr ON c.id = cr.course_id
-         WHERE cr.student_id = ? AND cr.status = 'active'
-         AND e.end_time > NOW()
-         ORDER BY e.start_time ASC`,
-        [req.user.id]
-      );
-  
-      // Modified query to only get completed exams that have results
-      const [completedExamsWithResults] = await pool.query(
-        `SELECT e.id, e.title as exam_title, e.description as exam_description,
-         e.start_time as exam_date, e.end_time,
-         c.id as course_id, c.code as course_code, c.title as course_title,
-         u.name as invigilator_name,
-         er.score, er.created_at,
-         TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
-         FROM exams e
-         JOIN courses c ON e.course_id = c.id
-         JOIN users u ON e.invigilator_id = u.id
-         JOIN course_registrations cr ON c.id = cr.course_id
-         JOIN exam_results er ON e.id = er.exam_id AND er.student_id = cr.student_id
-         WHERE cr.student_id = ? AND cr.status = 'active'
-         AND e.end_time <= NOW()
-         ORDER BY e.end_time DESC`,
-        [req.user.id]
-      );
-  
-      res.status(200).json({
-        success: true,
-        upcomingExams: upcomingExams.map(exam => ({
-          ...exam,
-          duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
-        })),
-        completedExams: completedExamsWithResults.map(exam => ({
-          ...exam,
-          result: {
-            score: exam.score,
-            created_at: exam.created_at
-          },
-          duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
-        }))
-      });
-    } catch (error) {
-      console.error('Error fetching exams:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to fetch exams'
-      });
-    }
-  };
+  try {
+    // First get all active course exams that haven't ended yet OR 
+    // have ended but don't have both attempts and results
+    const [upcomingExams] = await pool.query(
+      `SELECT e.id, e.title as exam_title, e.description as exam_description,
+       e.start_time as exam_date, e.end_time,
+       c.id as course_id, c.code as course_code, c.title as course_title,
+       u.name as invigilator_name,
+       TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+       FROM exams e
+       JOIN courses c ON e.course_id = c.id
+       JOIN users u ON e.invigilator_id = u.id
+       JOIN course_registrations cr ON c.id = cr.course_id
+       WHERE cr.student_id = ? AND cr.status = 'active'
+       AND (
+         NOT EXISTS (
+           SELECT 1 FROM exam_attempts ea 
+           WHERE ea.exam_id = e.id AND ea.student_id = cr.student_id
+         ) OR
+         NOT EXISTS (
+           SELECT 1 FROM exam_results er 
+           WHERE er.exam_id = e.id AND er.student_id = cr.student_id
+         )
+       )
+       ORDER BY e.start_time ASC`,
+      [req.user.id]
+    );
 
+    // Get only truly completed exams (have ended AND have both attempts and results)
+    const [completedExamsWithResults] = await pool.query(
+      `SELECT e.id, e.title as exam_title, e.description as exam_description,
+       e.start_time as exam_date, e.end_time,
+       c.id as course_id, c.code as course_code, c.title as course_title,
+       u.name as invigilator_name,
+       er.score, er.created_at,
+       TIMESTAMPDIFF(MINUTE, e.start_time, e.end_time) as duration
+       FROM exams e
+       JOIN courses c ON e.course_id = c.id
+       JOIN users u ON e.invigilator_id = u.id
+       JOIN course_registrations cr ON c.id = cr.course_id
+       JOIN exam_attempts ea ON e.id = ea.exam_id AND ea.student_id = cr.student_id
+       JOIN exam_results er ON e.id = er.exam_id AND er.student_id = cr.student_id
+       WHERE cr.student_id = ? AND cr.status = 'active'
+       ORDER BY e.end_time DESC`,
+      [req.user.id]
+    );
 
+    res.status(200).json({
+      success: true,
+      upcomingExams: upcomingExams.map(exam => ({
+        ...exam,
+        duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+      })),
+      completedExams: completedExamsWithResults.map(exam => ({
+        ...exam,
+        result: {
+          score: exam.score,
+          created_at: exam.created_at
+        },
+        duration: Math.round((new Date(exam.end_time) - new Date(exam.start_time)) / (1000 * 60))
+      }))
+    });
+  } catch (error) {
+    console.error('Error fetching exams:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch exams'
+    });
+  }
+};
 
+     //  AND e.end_time <= NOW()
+    //  before order by in complete
