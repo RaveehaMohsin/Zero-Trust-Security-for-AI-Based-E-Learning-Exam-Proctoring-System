@@ -17,7 +17,6 @@ exports.generateSecureHash = (data) => {
 };
 
 
-
 exports.encrypt = (text) => {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');

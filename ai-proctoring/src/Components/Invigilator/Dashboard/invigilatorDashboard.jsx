@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import '../../Super Admin/Dashboard/sadashboard.css';
 import ProfileSetup from '../../ProfileSetup/profileadd';
 import Exam from '../Exams/exam';
+import InvigilatorAlert from '../Alert/Alert';
 
 const InvigilatorDashboard = () => {
-  const [activeModule, setActiveModule] = useState('users'); // Default to courses
+  const [activeModule, setActiveModule] = useState('users'); // Default to profile
+  const navigate = useNavigate();
   
   // Mock user data
   const currentUser = {
@@ -13,13 +16,27 @@ const InvigilatorDashboard = () => {
     role: "Invigilator",
     avatar: "👑"
   };
+
+  // Handle module selection
+  const handleModuleSelect = (moduleId) => {
+    if (moduleId === 'logout') {
+      // Clear localStorage
+      localStorage.removeItem('emailForMFA');
+      localStorage.removeItem('role');
+      localStorage.removeItem('token');
+      // Navigate to home page
+      navigate('/');
+    } else {
+      setActiveModule(moduleId);
+    }
+  };
+
   // Radial menu items
   const modules = [
     { id: 'users', icon: '👥', label: 'Profile', color: '#6D8B74' },
     { id: 'exams', icon: '📚', label: 'Exams', color: '#A4B465' },
-    { id: 'analytics', icon: '📊', label: 'Analytics', color: '#5F7A61' },
     { id: 'alerts', icon: '🚨', label: 'Alerts', color: '#D54C4C' },
-    { id: 'settings', icon: '⚙️', label: 'Settings', color: '#8B7E74' }
+    { id: 'logout', icon: '🚪', label: 'Logout', color: '#8B7E74' }
   ];
 
   return (
@@ -56,7 +73,7 @@ const InvigilatorDashboard = () => {
                 backgroundColor: module.color,
                 color: '#fff'
               }}
-              onClick={() => setActiveModule(module.id)}
+              onClick={() => handleModuleSelect(module.id)}
             >
               <span className="button-icon">{module.icon}</span>
               <span className="button-label">{module.label}</span>
@@ -76,15 +93,12 @@ const InvigilatorDashboard = () => {
             >
               {activeModule === 'exams' && <Exam />}
               {activeModule === 'users' && <ProfileSetup />}
-              {/* {activeModule === 'analytics' && <SystemAnalytics />}
-              {activeModule === 'alerts' && <SecurityAlerts />}
-              {activeModule === 'settings' && <SystemSettings />} */}
+              {activeModule === 'alerts' && <InvigilatorAlert />}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
     </div>
-
   );
 };
 

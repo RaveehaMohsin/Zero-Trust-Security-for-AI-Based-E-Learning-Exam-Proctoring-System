@@ -6,7 +6,6 @@ const {
   getRegisteredCourses,
   getAvailableCourses, 
   getUpcomingExams ,
-  startExam, submitExam
 } = require('../controller/registercourses');
 
 router.post('/register', protect, registerCourse);

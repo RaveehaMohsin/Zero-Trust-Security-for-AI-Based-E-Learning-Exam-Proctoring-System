@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import '../../Super Admin/Dashboard/sadashboard.css';
 import ProfileSetup from '../../ProfileSetup/profileadd';
 import Registercourse from '../CourseRegister/registercourse';
@@ -8,6 +8,7 @@ import Notificationexams from '../NotificationExams/notificationexams';
 
 const StudentDashboard = () => {
   const [activeModule, setActiveModule] = useState('courses'); // Default to courses
+  const navigate = useNavigate();
   
   // Mock user data
   const currentUser = {
@@ -15,13 +16,27 @@ const StudentDashboard = () => {
     role: "Student",
     avatar: "👑"
   };
+
+  // Handle module selection
+  const handleModuleSelect = (moduleId) => {
+    if (moduleId === 'logout') {
+      // Clear localStorage
+      localStorage.removeItem('emailForMFA');
+      localStorage.removeItem('role');
+      localStorage.removeItem('token');
+      // Navigate to home page
+      navigate('/');
+    } else {
+      setActiveModule(moduleId);
+    }
+  };
+
   // Radial menu items
   const modules = [
     { id: 'users', icon: '👥', label: 'Profile', color: '#6D8B74' },
     { id: 'courses', icon: '📚', label: 'Register Courses', color: '#A4B465' },
     { id: 'notificationexams', icon: '📊', label: 'Notification Exams', color: '#5F7A61' },
-    { id: 'alerts', icon: '🚨', label: 'Alerts', color: '#D54C4C' },
-    { id: 'settings', icon: '⚙️', label: 'Settings', color: '#8B7E74' }
+    { id: 'logout', icon: '🚪', label: 'Logout', color: '#8B7E74' }
   ];
 
   return (
@@ -58,7 +73,7 @@ const StudentDashboard = () => {
                 backgroundColor: module.color,
                 color: '#fff'
               }}
-              onClick={() => setActiveModule(module.id)}
+              onClick={() => handleModuleSelect(module.id)}
             >
               <span className="button-icon">{module.icon}</span>
               <span className="button-label">{module.label}</span>
@@ -79,14 +94,11 @@ const StudentDashboard = () => {
               {activeModule === 'courses' && <Registercourse />}
               {activeModule === 'users' && <ProfileSetup />}
               {activeModule === 'notificationexams' && <Notificationexams />}
-            {/* //   {activeModule === 'alerts' && <SecurityAlerts />}
-            //   {activeModule === 'settings' && <SystemSettings />}  */}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
     </div>
-
   );
 };
 

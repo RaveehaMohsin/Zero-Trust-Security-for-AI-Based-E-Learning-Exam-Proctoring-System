@@ -322,5 +322,77 @@ exports.submitExam = async (req, res) => {
 };
 
 
+// Add this to your existing controller file
+exports.getActiveExamForInvigilator = async (req, res) => {
+  try {
+    const invigilatorId = req.user.id;
+
+    // 1. Get the active exam for this invigilator
+    const [activeExams] = await pool.query(
+      `SELECT id, title, course_id, description 
+       FROM exams 
+       WHERE invigilator_id = ? 
+       AND start_time <= NOW() 
+       AND end_time >= NOW() 
+       LIMIT 1`,
+      [invigilatorId]
+    );
+
+    if (activeExams.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No active exam found for this invigilator"
+      });
+    }
+
+    const exam = activeExams[0];
+
+    // 2. Get the student currently taking this exam (simplified)
+    const [activeStudents] = await pool.query(
+      `SELECT 
+         ea.student_id,
+         u.name,
+         ea.start_time
+       FROM exam_attempts ea
+       JOIN users u ON ea.student_id = u.id
+       WHERE ea.exam_id = ?
+       AND ea.end_time IS NULL
+       LIMIT 1`,
+      [exam.id]
+    );
+
+    if (activeStudents.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No active student found for this exam",
+        exam: exam
+      });
+    }
+
+    const student = activeStudents[0];
+
+    res.status(200).json({
+      success: true,
+      exam: {
+        id: exam.id,
+        title: exam.title,
+        course: exam.course_id
+      },
+      student: {
+        id: student.student_id,
+        name: student.name,
+        start_time: student.start_time
+        // Removed eye_movements and face_movements
+      }
+    });
+
+  } catch (error) {
+    console.error("Error fetching active exam:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch active exam data"
+    });
+  }
+};
 
 

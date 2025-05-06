@@ -1,30 +1,41 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom'; // ✅ Import useNavigate
 import './sadashboard.css';
 import CourseManagement from '../Courses CRUD/coursesCRUD';
 import ProfileSetup from '../../ProfileSetup/profileadd';
 
 const SuperAdminDashboard = () => {
-  const [activeModule, setActiveModule] = useState('courses'); // Default to courses
-  
-  // Mock user data
+  const [activeModule, setActiveModule] = useState('users');
+  const navigate = useNavigate(); // ✅ Hook for navigation
+
   const currentUser = {
     name: "Admin User",
     role: "Super Admin",
     avatar: "👑"
   };
-  // Radial menu items
+
   const modules = [
     { id: 'users', icon: '👥', label: 'Profile', color: '#6D8B74' },
     { id: 'courses', icon: '📚', label: 'Courses', color: '#A4B465' },
     { id: 'analytics', icon: '📊', label: 'Analytics', color: '#5F7A61' },
     { id: 'alerts', icon: '🚨', label: 'Alerts', color: '#D54C4C' },
-    { id: 'settings', icon: '⚙️', label: 'Settings', color: '#8B7E74' }
+    { id: 'logout', icon: '⚙️', label: 'Logout', color: '#8B7E74' }
   ];
+
+  const handleModuleSelect = (moduleId) => {
+    if (moduleId === 'logout') {
+      localStorage.removeItem('emailForMFA');
+      localStorage.removeItem('role');
+      localStorage.removeItem('token');
+      navigate('/');
+    } else {
+      setActiveModule(moduleId);
+    }
+  };
 
   return (
     <div className="super-admin-app">
-      {/* Top Navigation Bar */}
       <nav className="admin-navbar">
         <div className="nav-left">
           <h1 className="logo">ExamSecure</h1>
@@ -40,9 +51,7 @@ const SuperAdminDashboard = () => {
         </div>
       </nav>
 
-      {/* Main Dashboard Layout */}
       <div className="dashboard-container">
-        {/* Sidebar Navigation */}
         <div className="dashboard-sidebar">
           {modules.map((module) => (
             <motion.button
@@ -56,7 +65,7 @@ const SuperAdminDashboard = () => {
                 backgroundColor: module.color,
                 color: '#fff'
               }}
-              onClick={() => setActiveModule(module.id)}
+              onClick={() => handleModuleSelect(module.id)} // ✅ Updated to use logout logic
             >
               <span className="button-icon">{module.icon}</span>
               <span className="button-label">{module.label}</span>
@@ -64,7 +73,6 @@ const SuperAdminDashboard = () => {
           ))}
         </div>
 
-        {/* Main Content Area */}
         <div className="dashboard-content">
           <AnimatePresence mode="wait">
             <motion.div
@@ -76,15 +84,12 @@ const SuperAdminDashboard = () => {
             >
               {activeModule === 'courses' && <CourseManagement />}
               {activeModule === 'users' && <ProfileSetup />}
-              {/* {activeModule === 'analytics' && <SystemAnalytics />}
-              {activeModule === 'alerts' && <SecurityAlerts />}
-              {activeModule === 'settings' && <SystemSettings />} */}
+              {/* You can uncomment or add the respective components here */}
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
     </div>
-
   );
 };
 

@@ -185,3 +185,29 @@
   }
 }
 
+/* Add to your ExamInterface.css */
+.proctoring-alerts {
+  background-color: #fff3f3;
+  border-left: 4px solid #ff6b6b;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.proctoring-alerts h4 {
+  margin-top: 0;
+  color: #d32f2f;
+}
+
+.proctoring-alerts ul {
+  padding-left: 1.5rem;
+  margin-bottom: 0;
+}
+
+.proctoring-alerts li.alert {
+  color: #d32f2f;
+}
+
+.proctoring-alerts li.down-alert {
+  color: #b71c1c;
+  font-weight: bold;
+}

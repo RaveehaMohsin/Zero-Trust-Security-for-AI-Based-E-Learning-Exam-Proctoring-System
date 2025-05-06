@@ -137,6 +137,8 @@ const verifySecurityQuestion = async (req, res, next) => {
         "::127.0.0.1"
       );
 
+      
+
       console.log("Generated Device Fingerprint:", deviceFingerprint);
 
       await pool.query("UPDATE users SET device_id = ? WHERE id = ?", [
